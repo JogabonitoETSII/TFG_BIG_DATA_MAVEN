@@ -1,0 +1,9 @@
+com/TFG_BIG_DATA/maven/TFG_MAVEN_2/AppTest.class
+Test/BehaviorMongoAggregationBuilderTest.class
+Test/MatchFilterIObjectTest.class
+Test/YarnTest.class
+Test/HDFSLogicTest.class
+Test/Pojos_Test.class
+Test/HadoopTest.class
+Test/AggregationQueryBuildersTest.class
+Test/TestMongo.class

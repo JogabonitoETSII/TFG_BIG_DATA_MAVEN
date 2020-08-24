@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.TFG_BIG_DATA.maven.TFG.AppTest
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s - in com.TFG_BIG_DATA.maven.TFG.AppTest

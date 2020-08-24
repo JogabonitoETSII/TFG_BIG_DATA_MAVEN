@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.TFG_BIG_DATA.maven</groupId>
+  <artifactId>TFG_MAVEN_2</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+
+  <name>TFG_MAVEN_2</name>
+  <!-- FIXME change it to the project's website -->
+  <url></url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+  </properties>
+  
+  <repositories>
+ 
+  	<repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>pentaho</id>
+      <name>pentaho-designer-core</name>
+      <url>https://nexus.pentaho.org/content/groups/omni/</url>
+    </repository>
+  	
+  	<repository>
+ 		<id>pentaho-public</id>
+ 		<url>http://nexus.pentaho.org/content/groups/omni/</url>
+	</repository>
+  	
+  </repositories>
+
+  <dependencies>
+  
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver-sync</artifactId>
+        <version>4.0.2</version>
+    </dependency>
+   <dependency>
+   		<groupId>org.slf4j</groupId>
+   		<artifactId>slf4j-simple</artifactId>
+   		<version>1.7.30</version>
+	</dependency>
+
+			<dependency>
+  		 <groupId>org.apache.hadoop</groupId>
+   	<artifactId>hadoop-hdfs-client</artifactId>
+   	<version>3.2.1</version>
+   		<exclusions>
+	        <exclusion>
+	            <groupId>org.slf4j</groupId>
+	            <artifactId>slf4j-log4j12</artifactId>
+	    	</exclusion>
+	       	<exclusion>
+           	<groupId>log4j</groupId>
+           	<artifactId>log4j</artifactId>
+       	</exclusion>
+	    </exclusions>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common -->
+	<!--  <dependency>
+    	<groupId>org.apache.hadoop</groupId>
+    	<artifactId>hadoop-common</artifactId>
+    	<version>3.3.0</version>
+    		<exclusions>
+	        <exclusion>
+	            <groupId>org.slf4j</groupId>
+	            <artifactId>slf4j-log4j12</artifactId>
+	    	</exclusion>
+	       	<exclusion>
+            	<groupId>log4j</groupId>
+            	<artifactId>log4j</artifactId>
+        	</exclusion>
+	    </exclusions>
+	</dependency>
+	-->
+	<dependency>
+  		<groupId>org.apache.hadoop</groupId>
+  		<artifactId>hadoop-client</artifactId>
+  		<version>3.2.1</version>
+  			<exclusions>
+	        <exclusion>
+	            <groupId>org.slf4j</groupId>
+	            <artifactId>slf4j-log4j12</artifactId>
+	    	</exclusion>
+	       	<exclusion>
+            	<groupId>log4j</groupId>
+            	<artifactId>log4j</artifactId>
+        	</exclusion>
+	    </exclusions>
+	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/pentaho-reporting-engine/pentaho-reporting-engine-classic-core -->
+<!-- https://mvnrepository.com/artifact/pentaho-reporting-engine/pentaho-reporting-engine-classic-core -->
+	
+	
+	
+	<!--  MAVEN FOR PENTAHO DEPENDECIES -->
+	
+
+	
+	<!-- YARN API DEPENDECIES -->
+	<!--<dependency>
+		<groupId>org.apache.hadoop</groupId>
+		<artifactId>hadoop-yarn-api</artifactId>
+		<version>3.3.0</version>
+	</dependency>
+	
+	
+	-->
+	
+	<dependency>
+      <groupId>bsf</groupId>
+      <artifactId>bsf</artifactId>
+      <version>2.4.0</version>
+    </dependency>
+	
+	<dependency>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>libdocbundle</artifactId>
+      <version>8.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>libfonts</artifactId>
+      <version>8.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>libformat</artifactId>
+      <version>8.0-SNAPSHOT</version>
+    </dependency>    
+    <dependency>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>libformula</artifactId>
+      <version>8.0-SNAPSHOT</version>
+    </dependency>             
+    <dependency>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>libloader</artifactId>
+      <version>8.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>librepository</artifactId>
+      <version>8.0-SNAPSHOT</version>
+    </dependency>        
+    <dependency>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>libserializer</artifactId>
+      <version>8.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>libxml</artifactId>
+      <version>8.0-SNAPSHOT</version>
+    </dependency>
+	
+	<dependency>
+      <groupId>org.pentaho.reporting.library</groupId>
+      <artifactId>libbase</artifactId>
+      <version>8.0-SNAPSHOT</version>
+    </dependency>
+	
+	<dependency>
+    	<groupId>pentaho-reporting-engine</groupId>
+    	<artifactId>pentaho-reporting-engine-classic-extensions</artifactId>
+    	<version>7.1-QAT-217</version>
+	</dependency>
+	
+	<dependency>
+    	<groupId>pentaho-reporting-engine</groupId>
+    	<artifactId>pentaho-reporting-engine-classic-core</artifactId>
+    	<version>7.1-QAT-217</version>
+	</dependency>
+	
+	
+	<dependency>
+    	<groupId>pentaho-reporting-engine</groupId>
+   		 <artifactId>pentaho-reporting-engine-legacy-charts</artifactId>
+   		 <version>7.0.0.6-95</version>
+	</dependency>
+	
+	
+	<dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>1.0.19</version>
+    </dependency>
+	
+	
+	
+  </dependencies>
+    
+	<!-- https://mvnrepository.com/artifact/pentaho-reporting-engine/pentaho-reporting-engine-classic-extensions -->
+	<!-- https://mvnrepository.com/artifact/pentaho-reporting-engine/pentaho-reporting-engine-classic-extensions -->
+
+
+	
+
+  <build>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.7.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
