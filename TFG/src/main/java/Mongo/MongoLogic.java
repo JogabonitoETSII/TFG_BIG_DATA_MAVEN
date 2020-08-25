@@ -1,7 +1,12 @@
+/*
+ * 
+ */
 package Mongo;
 
 
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,12 +95,16 @@ public class MongoLogic  extends DatabaseObject{
 	
 	/** The file path to export. */
 	private String[] filePathToExport;
+	
+	/** The exclude id find. */
+	private Boolean excludeIdFind;
 	/**
 	 * Instantiates a new mongo logic.
 	 *
 	 * @throws MongoException the mongo exception
 	 */
 	public MongoLogic() throws MongoException {
+		setExcludeIdFind(false);
 		setQueryCreator(new PojosClass());
 		setAgrregates(new AggregationQueryBuilders());
 		createConecctionOnDatabase( getConnectionString());
@@ -109,6 +118,7 @@ public class MongoLogic  extends DatabaseObject{
 	 */
 	public MongoLogic(String connectionString) throws MongoException {
 		//setQueryCreator(new PojosClass());
+		setExcludeIdFind(false);
 		setAgrregates(new AggregationQueryBuilders());
 		setConnectionString(connectionString);
 		createConecctionOnDatabase(connectionString);
@@ -201,6 +211,31 @@ public class MongoLogic  extends DatabaseObject{
 	}
 	
 	/**
+	 * Find documents.
+	 *
+	 * @param database the database
+	 * @param collection the collection
+	 * @return the aggregate iterable
+	 */
+	public AggregateIterable<Document> findDocuments(String database, String collection){
+		excludeIdFromQuerysResult();
+		return getAnyCollection(database, collection).aggregate(getAgrregates().getPipeline());
+	}
+	
+	/**
+	 * Find documents.
+	 *
+	 * @param database the database
+	 * @param collection the collection
+	 * @param pipeline the pipeline
+	 * @return the aggregate iterable
+	 */
+	public AggregateIterable<Document> findDocuments(String database, String collection, ArrayList<Bson> pipeline){
+		excludeIdFromQuerysResult();
+		return getAnyCollection(database, database).aggregate(pipeline);
+	}
+	
+	/**
 	 * Existe any database.
 	 *
 	 * @param databaseNameToSearch the database name to search
@@ -262,9 +297,29 @@ public class MongoLogic  extends DatabaseObject{
 		return auxDatabaseSelect.getCollection(collection);
 	}
 	
-	public AggregateIterable<Document> AggregateMatch(MatchFilterObject selects , String Database, String collection ){
+	/**
+	 * Aggregate match.
+	 *
+	 * @param selects the selects
+	 * @return the aggregate iterable
+	 */
+	public void AggregateMatch(MatchFilterObject selects){
 		getAgrregates().addMatchStage(selects.matchStageBuilder());
-		return getAnyCollection(Database, collection).aggregate(getAgrregates().getPipeline());
+	}
+	
+	/**
+	 * Aggregate projection.
+	 *
+	 * @param fields the fields
+	 * @param exclude the exclude
+	 */
+	public void AggregateProjection(ArrayList<String> fields , Boolean exclude) {
+		getAgrregates().makeProjectStage(fields, exclude);
+		
+	}
+	
+	public void AggregateProjection(String field , Boolean exclude) {
+		getAgrregates().makeProjectStage(field, exclude);
 	}
 	
 	/**
@@ -589,37 +644,62 @@ public class MongoLogic  extends DatabaseObject{
 		this.agrregates = agrregates;
 	}
 	
-	/*****************
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
+	/**
+	 * Export to data to file.
+	 *
+	 * @param folderPath the folder path
+	 * @param fileName the file name
+	 * @param aggregateMatch the aggregate match
+	 * @throws IOException ***************
 	 */
 
-	public void exportToDataToFile(String folderPath, String fileName, AggregateIterable<Document> aggregateMatch) {
+	public void exportToDataToFile(String folderPath, String fileName, AggregateIterable<Document> aggregateMatch) throws IOException {
 		// TODO Auto-generated method stub
-		setFilePathToExport(new String[] {folderPath,fileName});
+		setFilePathToExport(new String[] {folderPath,fileName}); // SET FOLDER AND FILE NAME TO LINKED  A HADOOP
 		
+		// System.out.println("cotenido de la query " + aggregateMatch.first() );
 		
-		
-		
-		
+		@SuppressWarnings("resource")
+		FileWriter auxOutputStream = new FileWriter(folderPath+fileName);
+		int i = 0;
+		for(Document outputDocs : aggregateMatch) {
+			i++;
+			auxOutputStream.write(  outputDocs.toJson() + "\n");
+			
+			if(i > 100) {
+				auxOutputStream.close();
+				break;
+			}
+			
+		}
 	}
 
+	/**
+	 * Exclude id from querys result.
+	 */
+	public void excludeIdFromQuerysResult() {
+		String auxExcludeId = "_id";
+		if(!getExcludeIdFind()) {
+			getAgrregates().makeProjectStage(auxExcludeId,getExcludeIdFind());
+			//System.out.println(" pipeplineeee  " + getAgrregates().getPipeline());
+		}
+	}
 	
-	
-	/** The print block. 
-	Block<? super org.bson.Document> printBlock = new Block<org.bson.Document>() {
-	       @Override
-	       public void apply(final org.bson.Document document) {
-	           System.out.println(((org.bson.Document) document).toJson());
-	       }
-	};*/
+	/**
+	 * Gets the exclude id find.
+	 *
+	 * @return the exclude id find
+	 */
+	public Boolean getExcludeIdFind() {
+		return excludeIdFind;
+	}
+
+	/**
+	 * Sets the exclude id find.
+	 *
+	 * @param excludeIdFind the new exclude id find
+	 */
+	public void setExcludeIdFind(Boolean excludeIdFind) {
+		this.excludeIdFind = excludeIdFind;
+	}
 }

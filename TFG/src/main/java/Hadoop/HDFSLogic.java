@@ -116,8 +116,8 @@ public class HDFSLogic {
 	/**
 	 * Adds the file.
 	 *
-	 * @param filePath the file path
 	 * @param folderPath the folder path
+	 * @param filePath the file path
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void addFile (String folderPath , String filePath) throws IOException {
@@ -345,6 +345,18 @@ public class HDFSLogic {
 	}
 	
 	/**
+	 * Copy to local.
+	 *
+	 * @param remoteFolder the remote folder
+	 * @param localFolder the local folder
+	 * @throws IllegalArgumentException the illegal argument exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public void copyToLocal(String remoteFolder, String localFolder) throws IllegalArgumentException, IOException {
+		getHdfsFileSystem().copyToLocalFile( new Path(remoteFolder), new Path(localFolder));
+	}
+	
+	/**
 	 * Copy to local actually folder.
 	 *
 	 * @param filePath the file path
@@ -407,6 +419,13 @@ public class HDFSLogic {
 		
 	}
 	
+	/**
+	 * Creates the path.
+	 *
+	 * @param pathDirectorie the path directorie
+	 * @param fileName the file name
+	 * @return the path
+	 */
 	public Path createPath( String pathDirectorie, String fileName) {
 		return new Path(pathDirectorie, fileName);
 	}

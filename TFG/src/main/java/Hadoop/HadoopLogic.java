@@ -46,7 +46,6 @@ public class HadoopLogic extends AnalizerObject  {
 	public HadoopLogic(String hdfsConnectionString ) throws IOException {
 		setHdfscomands(new HDFSLogic(hdfsConnectionString));
 		setYarn(new Yarn());
-
 	}
 	
 	/**
@@ -57,7 +56,10 @@ public class HadoopLogic extends AnalizerObject  {
 	 */
 	public void execute(String jarFilePathToExecute,String jarOption) {
 		try {
-			executeToYarn(jarFilePathToExecute, jarOption, getFolderInputPath(), getFolderOutpath());
+			
+			//System.out.println("fichero a ejecuta ruta " + getRemotePath()+getFileName());
+			//System.out.println("folder de salida " + getOutputPath());
+			executeToYarn(jarFilePathToExecute, jarOption, getRemotePath()+getFileName(), getOutputPath());
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -83,11 +85,16 @@ public class HadoopLogic extends AnalizerObject  {
 	 * Uplaod data.
 	 *
 	 * @param filePathToCluster the file path to cluster
-	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public void uplaodData(String filePathToCluster) throws IOException {
+	@Override
+	public void uploadData(String filePathToCluster) {
 		setFolderInputPath(filePathToCluster);
-		getHdfscomands().copyFromLocal(getFilePathToAnalize(), getFileName(), getFolderInputPath());
+		try {
+			getHdfscomands().copyFromLocal(getFilePathToAnalize(), getFileName(), getRemotePath());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -95,6 +102,9 @@ public class HadoopLogic extends AnalizerObject  {
 	 */
 	@Override
 	public void execute() {
+		
+	//	System.out.println("yarn jar ruta " + getYarn().getJarFileToExecute());
+		//System.out.println("yarn jar option " + getYarn().getJarOption());
 		execute(getYarn().getJarFileToExecute(), getYarn().getJarOption());
 	}
 	
@@ -205,5 +215,20 @@ public class HadoopLogic extends AnalizerObject  {
 	public void setYarnJarOption(String option) {
 		getYarn().setJarOption(option);
 	}
+
+	@Override
+	public void downloadResult() {
+		try {
+			System.out.println( "remotepath " + getOutputPath() + "  localpath "  + getFilePathToAnalize()  );
+			getHdfscomands().copyToLocal(getOutputPath(), getFilePathToAnalize());
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	
 }

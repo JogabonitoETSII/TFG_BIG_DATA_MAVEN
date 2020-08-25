@@ -108,6 +108,20 @@ public class Yarn {
 		Process auxProces = Runtime.getRuntime().exec(new  String[]{BASHSRC,BASHLOPTION, BASHCOPTION, getYarnHome()+ " " + BASHJAROPTION + " "+  jarFilePath+ " " + jarOption+ " " +inputFolder + " " + outputFolder}) ;
 		int outputOfProcess  = auxProces.waitFor();
 		
+		System.out.println(" devuelve 0 si acaba normalmente. " + auxProces.waitFor());
+		//System.out.println(" variables de entorno e. " + System.getenv("HOME"));
+		StringBuffer output = new StringBuffer();
+		BufferedReader reader = 
+                new BufferedReader(new InputStreamReader(auxProces.getInputStream()));
+		
+		 String line = "";           
+	        while ((line = reader.readLine())!= null) {
+	            output.append(line + "\n");
+	        }
+	        System.out.println("-------------------------- log del comando ejecutado --------");
+	        System.out.println(output.toString());
+	        System.out.println("-------------------------- log del comando ejecutado --------");
+		
 		if(outputOfProcess == 0) {
 			
 			setExecuteIsTrue(true);

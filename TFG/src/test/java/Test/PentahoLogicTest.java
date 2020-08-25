@@ -13,9 +13,9 @@ public class PentahoLogicTest {
 
 	@Test
 	public void test() throws ReportProcessingException, IOException {
-		PentahoLogic pentaho;
-		pentaho = new PentahoLogic();
-		pentaho.createDefaultReport();
+		//PentahoLogic pentaho;
+		//pentaho = new PentahoLogic();
+		//pentaho.createDefaultReport();
 	}
 
 }

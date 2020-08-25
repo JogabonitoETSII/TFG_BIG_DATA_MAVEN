@@ -73,18 +73,31 @@ public class AggregationQueryBuilders  {
 	 * @param fields the fields
 	 * @param excludeId the exclude id
 	 */
-	public void makeProjectStage(ArrayList<String> fields , boolean excludeId) {
+	public void makeProjectStage(ArrayList<String> fields , boolean exclude) {
 		Bson projection = null;
 		
 		if(fields.size() > 0) {	
 			setProjectStaga(true);
-			if(!excludeId) {
-			
+			if(!exclude) {
 				projection = Projections.exclude(fields);
-			
 			}
 			else {
 				 projection = Projections.include(fields);
+			}
+			adddPipelineStage(Aggregates.project(projection));
+		}
+	}
+	
+	public void makeProjectStage(String field , boolean exclude) {
+		Bson projection = null;
+		
+		if(!field.isEmpty()) {	
+			setProjectStaga(true);
+			if(!exclude) {
+				projection = Projections.exclude(field);
+			}
+			else {
+				 projection = Projections.include(field);
 			}
 			adddPipelineStage(Aggregates.project(projection));
 		}

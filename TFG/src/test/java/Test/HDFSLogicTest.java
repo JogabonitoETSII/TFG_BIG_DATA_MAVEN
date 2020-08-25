@@ -36,7 +36,7 @@ public class HDFSLogicTest {
 		String file = "querysToTestMOngo";
 		String remoteFolder = "/albertoHome/" ;
 		String connecitonStirng = "hdfs://localhost:9000";
-		HDFSLogic hdfs = new HDFSLogic(connecitonStirng);
+		//HDFSLogic hdfs = new HDFSLogic(connecitonStirng);
 		//connectToHadoopTest(hdfs, connecitonStirng);
 		//addFileTest(hdfs,  remoteFolder ,file  ); // pasmaos el folder y la ruta compelta con el fichero para realizar los test
 		//listFoldersTest(hdfs,remotePath);
