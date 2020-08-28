@@ -56,9 +56,7 @@ public class MongoHadoopBehaviorTest {
 	 */
 	@Test
 	public void test() throws IOException {
-		
-		
-		DatabaseAnalizerLinkClass mongoHadoopLinked = new DatabaseAnalizerLinkClass();
+		/*DatabaseAnalizerLinkClass mongoHadoopLinked = new DatabaseAnalizerLinkClass();
 		HadoopLogic hadoopYarn = new HadoopLogic(connecitonStirngToDFS);
 		initAtributes();
 		makeTestArgumentsFields("type", "Music");
@@ -67,10 +65,10 @@ public class MongoHadoopBehaviorTest {
 		String connectionString = "mongodb://" + USER + ":" + PASS + "@127.0.0.1:27017/" + DATABASENAME;
 		MongoLogic connectionDatabase = null;
 		connectionDatabase = new MongoLogic(connectionString);
-		connectionDatabase.AggregateProjection("sku", false); // kitamos los campos que puedan ralentizar el proceso
+		/*connectionDatabase.AggregateProjection("sku", false); // kitamos los campos que puedan ralentizar el proceso
 		connectionDatabase.AggregateMatch(match); // setemaos la query
 		connectionDatabase.exportToDataToFile("/home/alberto/Escritorio/","exportTEST1" ,connectionDatabase.findDocuments(DATABASENAME, COLLECTION) ); // exportmaos los datos
-		//connectionDatabase.setFilePathToExport(new String[] {"/home/alberto/Escritorio/","exportTEST1"}); 
+		connectionDatabase.setFilePathToExport(new String[] {"/home/alberto/Escritorio/","exportTEST1"}); 
 		hadoopYarn.getYarn().setYarnHome("/home/hadoop/hadoop-2.8.5/bin/yarn"); // añadimos el home del yarn en local
 		hadoopYarn.setRemotePath("/albertoHome/"); // añadimos el path remoto donde se va a subir el fichero
 		hadoopYarn.setOutputPath("/albertoHome/outputTEST1"); // añadimos el folder para el fichero de salida
@@ -78,11 +76,14 @@ public class MongoHadoopBehaviorTest {
 		hadoopYarn.setYarnJarOption("wordcount"); // añadimos la opcion para el fichero jar
 		mongoHadoopLinked.setDataBase(connectionDatabase); // seteamos el objeto de BBDD
 		mongoHadoopLinked.setAnalizer(hadoopYarn); // seteamos el obejto analizardor
-		//mongoHadoopLinked.setPathTOExecute("/home/alberto/Escritorio/outputTEST1/", "exportTEST1"); // 
+		mongoHadoopLinked.setPathTOExecute("/home/alberto/Escritorio/outputTEST1/", "exportTEST1"); // 
+		String line = hadoopYarn.getResultFile();
 		//mongoHadoopLinked.executeFileToAnalice();
 		//hadoopYarn.downloadResult();
-		System.out.println( "devuelve ture si existe  el fichero _SUCCES  " +  mongoHadoopLinked.succesBuildSolution()); // comprobamos que el fichero __SUCCES se encuentra en local
-		Assert.assertTrue(mongoHadoopLinked.succesBuildSolution());
+		//System.out.println( "devuelve ture si existe  el fichero _SUCCES  " +  mongoHadoopLinked.succesBuildSolution()); // comprobamos que el fichero __SUCCES se encuentra en local
+		
+		System.out.println("devuelve correctamente el nombre del fichero? " + line);
+		Assert.assertTrue(mongoHadoopLinked.succesBuildSolution());*/
 	}
 
 	/**

@@ -18,6 +18,9 @@ public abstract class AnalizerObject {
 	/** The remote path. */
 	public String remotePath;
 	
+	/** The result file name. */
+	public String resultFileName;
+	
 	/**
 	 * Sets the file path to analize.
 	 *
@@ -102,11 +105,46 @@ public abstract class AnalizerObject {
 	/**
 	 * Upload data to.
 	 *
-	 * @param localPath the local path
 	 * @param remotePath the remote path
 	 */
+	
+	
 	public abstract void uploadData(String remotePath);
+	
+	/**
+	 * Gets the result file name.
+	 *
+	 * @return the result file name
+	 */
+	public String getResultFileName() {
+		return resultFileName;
+	}
+
+	/**
+	 * Sets the result file name.
+	 *
+	 * @param resultFileName the new result file name
+	 */
+	public void setResultFileName(String resultFileName) {
+		this.resultFileName = resultFileName;
+	}
+
+	/**
+	 * Download result.
+	 */
 	public abstract void downloadResult();	
 	
+	/**
+	 * Gets the result file.
+	 *
+	 * @return the result file
+	 */
+	public abstract String getResultFile();
 	
+	/**
+	 * OutputLocal folder.
+	 *
+	 * @return the string
+	 */
+	public abstract String outputLocalFolder();
 }

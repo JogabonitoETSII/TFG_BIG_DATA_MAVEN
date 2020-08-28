@@ -110,9 +110,8 @@ public class Yarn {
 		
 		System.out.println(" devuelve 0 si acaba normalmente. " + auxProces.waitFor());
 		//System.out.println(" variables de entorno e. " + System.getenv("HOME"));
-		StringBuffer output = new StringBuffer();
-		BufferedReader reader = 
-                new BufferedReader(new InputStreamReader(auxProces.getInputStream()));
+		/*StringBuffer output = new StringBuffer();
+		BufferedReader reader =  new BufferedReader(new InputStreamReader(auxProces.getInputStream()));
 		
 		 String line = "";           
 	        while ((line = reader.readLine())!= null) {
@@ -121,7 +120,7 @@ public class Yarn {
 	        System.out.println("-------------------------- log del comando ejecutado --------");
 	        System.out.println(output.toString());
 	        System.out.println("-------------------------- log del comando ejecutado --------");
-		
+		*/
 		if(outputOfProcess == 0) {
 			
 			setExecuteIsTrue(true);

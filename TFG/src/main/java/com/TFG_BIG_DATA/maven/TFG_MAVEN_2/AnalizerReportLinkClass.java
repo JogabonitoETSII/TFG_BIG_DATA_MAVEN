@@ -29,9 +29,15 @@ public class AnalizerReportLinkClass {
 	 * @param report the report
 	 */
 	public AnalizerReportLinkClass(AnalizerObject analizer, ReportObject report) {
-		
+		setAnalizer(analizer);
+		setReport(report);
 	}
 
+	public Boolean makeReport() {
+		System.out.println("path del report de salida " + getAnalizer().getFilePathToAnalize()+getAnalizer().outputLocalFolder() );
+		return getReport().buildReport(getAnalizer().getFilePathToAnalize()+getAnalizer().outputLocalFolder(), getAnalizer().getResultFile());
+	}
+	
 	/**
 	 * Gets the analizer.
 	 *

@@ -1,6 +1,8 @@
 package Hadoop;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import org.apache.hadoop.conf.Configuration;
 
@@ -12,8 +14,10 @@ import EnviromentClass.AnalizerObject;
  * The Class HadoopLogic.
  */
 public class HadoopLogic extends AnalizerObject  {
-
-	
+	private final Integer ONE = 1;
+	private final String SUCCES = "_SUCCESS";
+	private final String PDF = ".PDF";
+	private final String ROOT = "/";
 	/** The connection string. */
 	private String connectionString ;
 	
@@ -219,7 +223,7 @@ public class HadoopLogic extends AnalizerObject  {
 	@Override
 	public void downloadResult() {
 		try {
-			System.out.println( "remotepath " + getOutputPath() + "  localpath "  + getFilePathToAnalize()  );
+			//System.out.println( "remotepath " + getOutputPath() + "  localpath "  + getFilePathToAnalize()  );
 			getHdfscomands().copyToLocal(getOutputPath(), getFilePathToAnalize());
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -230,5 +234,43 @@ public class HadoopLogic extends AnalizerObject  {
 		}
 	}
 	
-	
+	/**
+	 * Gets the result file.
+	 *
+	 * @return the result file
+	 */
+	public String getResultFile() {
+		//System.out.println("directorio a hacer el ls  " + getFilePathToAnalize()+outputLocalFolder());
+		try {
+			Process auxProces;
+			 auxProces = Runtime.getRuntime().exec("ls " + getFilePathToAnalize() + outputLocalFolder());
+
+			BufferedReader reader =  new BufferedReader(new InputStreamReader(auxProces.getInputStream()));
+			String line = "";           
+			Integer i = 0;
+		        while ((line = reader.readLine())!= null) {
+		        	i++;
+		        	System.out.println("contenido del directorio "  + line + " numero de veces en el bucle  " + i  );
+		        	System.out.println("boolean devolviendo de la exprecion !line.contains(PDF) " +!line.toUpperCase().contains(PDF));
+		        	if( (!line.contains(SUCCES)) && !line.toUpperCase().contains(PDF)) {
+		        		return  ROOT+line;
+		        	}
+		        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "null";
+	}
+
+	/**
+	 * Outputlocal folder.
+	 *
+	 * @return the string
+	 */
+	@Override
+	public String outputLocalFolder() {
+		String [] auxFolder;
+		auxFolder =  getOutputPath().split("/");
+		return auxFolder[auxFolder.length - ONE];
+	}
 }

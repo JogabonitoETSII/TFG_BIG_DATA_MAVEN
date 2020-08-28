@@ -45,7 +45,7 @@ public class DatabaseAnalizerLinkClass {
 		String[]  auxFilePathToAnalize;
 		auxFilePathToAnalize  = getDataBase().filePathToAnalize();
 		setPathTOExecute(auxFilePathToAnalize[FILEPATHPOSITION], auxFilePathToAnalize[FILENAMEPOSITION]);
-		getAnalizer().uploadData(getAnalizer().getOutputPath());
+		getAnalizer().uploadData(getAnalizer().getRemotePath());
 		getAnalizer().execute();
 		getAnalizer().downloadResult();
 		

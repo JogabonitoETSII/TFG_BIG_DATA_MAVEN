@@ -10,11 +10,19 @@ public abstract class ReportObject {
 	/** The Folder input ouput report. */
 	public String FolderInputOuputReport;
 	
+	/** The output file report. */
+	public String outputFileReportName;
+	
 
 	/**
 	 * Builds the report.
+	 *
+	 * @param filePath the file path
+	 * @param fileName the file name
+	 * @param reportType the report type
+	 * @return the boolean
 	 */
-	public abstract void buildReport();
+	public abstract Boolean buildReport(String filePath , String fileName);
 
 
 	/**
@@ -35,6 +43,28 @@ public abstract class ReportObject {
 	public void setFolderInputOuputReport(String folderInputOuputReport) {
 		FolderInputOuputReport = folderInputOuputReport;
 	}
+
+
+	/**
+	 * Gets the output file report name.
+	 *
+	 * @return the output file report name
+	 */
+	public String getOutputFileReportName() {
+		return outputFileReportName;
+	}
+
+
+	/**
+	 * Sets the output file report name.
+	 *
+	 * @param outputFileReportName the new output file report name
+	 */
+	public void setOutputFileReportName(String outputFileReportName) {
+		this.outputFileReportName = outputFileReportName;
+	}
+
+
 	
 	
 }

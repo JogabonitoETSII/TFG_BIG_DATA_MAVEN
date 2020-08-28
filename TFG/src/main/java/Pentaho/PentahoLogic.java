@@ -1,7 +1,11 @@
 package Pentaho;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -34,8 +38,27 @@ import org.pentaho.reporting.engine.classic.extensions.legacy.charts.*;
  * The Class PentahoLogic.
  */
 public class PentahoLogic  extends ReportObject{
+	public String reportType ;
+	private final String OUTPUTEXTENCION = ".pdf";
+	private final String TABLE = "TABLE";
 	
+	/** The colums names. */
+	private String [] columsNames;
 	
+	/** The import delimiter. */
+	private String importDelimiter;
+	
+	/** The series color report. */
+	private String [] seriesColorReport;
+	
+	/** The select data colum. */
+	private String selectDataColum;
+	
+	/** The data ejex. */
+	private String dataEjex;
+	
+	/** The data E je Y. */
+	private String dataEJeY;
  	 /** The datafactory. */
  	 final private TableDataFactory DATAFACTORY = new TableDataFactory();
 	
@@ -75,42 +98,132 @@ public class PentahoLogic  extends ReportObject{
 	private BarChartExpression chartExpression;
 
 	/**
+	 *  The wordcountinputcolumsn.
+	 *
+	 * @throws ReportProcessingException the report processing exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+
+	
+	/**
 	 * Instantiates a new pentaho logic.
 	 *
 	 * @throws ReportProcessingException the report processing exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public  PentahoLogic() throws ReportProcessingException, IOException {
+	public PentahoLogic() throws ReportProcessingException, IOException {
 		
 	}
 	
+	
+	/**
+	 * Creates the report word counts.
+	 *
+	 * @param filePath the file path
+	 * @param fileName the file name
+	 * @param delimiter the delimiter
+	 * @param columNames the colum names
+	 * @param selectDataColum the select data colum
+	 * @param DataEjeY the data eje Y
+	 * @param dataEjeX the data eje X
+	 * @param colorSeries the color series
+	 * @return the boolean
+	 * @throws FileNotFoundException the file not found exception
+	 * @throws ReportProcessingException the report processing exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public Boolean createReportWordCounts(String filePath , String fileName,String delimiter ,String[] columNames , String selectDataColum, String  DataEjeY,String dataEjeX,String[] colorSeries) throws FileNotFoundException, ReportProcessingException, IOException {
+		initReport();
+		//importDataToTableReportDelimeterFormat( filePath,fileName, delimiter);
+		makeTableReport(importDataToTableReportDelimeterFormat( filePath,fileName, delimiter),columNames,selectDataColum,DataEjeY,dataEjeX,colorSeries);
+		 return PdfReportUtil.createPDF(getReport(),filePath+getOutputFileReportName()+OUTPUTEXTENCION);
+	}
+	
+	/**
+	 * Import data to table report cound words.
+	 *
+	 * @param filePath the file path
+	 * @param fileName the file name
+	 * @param delimiter the delimiter
+	 * @return the object[][]
+	 * @throws FileNotFoundException the file not found exception
+	 */
+	public Object[][] importDataToTableReportDelimeterFormat(String filePath , String fileName , String delimiter) throws FileNotFoundException {
+		File input = new File(filePath+fileName);
+		System.out.println("ruta para el fichero a analizar "  + filePath+fileName);
+		Scanner reader = new Scanner(input);
+		String[] inputLineText;
+		ArrayList<ArrayList<Object>> data = new ArrayList<ArrayList<Object>>();
+		ArrayList<Object> inputRowData = new ArrayList<Object>();
+		if(input.exists()) {
+			//System.out.println("existe el fichero? ");
+			//reader.useDelimiter(delimiter);
+			while(reader.hasNextLine()) {
+				inputLineText = reader.nextLine().split(delimiter);
+				for(int i = 0; i < inputLineText.length ; i++) {
+				    if(inputLineText[i].matches("[-+]?\\d*\\.?\\d+")) {
+						 //System.out.println("detecta enteros=? " + inputLineText[i]);
+						inputRowData.add(Double.parseDouble(inputLineText[i]));
+					}
+					else {	
+						inputRowData.add(inputLineText[i]);
+						//System.out.println("solo detecta Strings? " + inputLineText[i]);
+					}
+				}
+				if(inputLineText != null) {
+					//System.out.println("entramos al detectar el salto de linea? + " + inputRowData);
+					data.add(inputRowData);
+					inputRowData = new ArrayList<Object>();
+				}
+			}
+			return transforDataInput(data);
+		}
+		return null;
+	}
+	
+	/**
+	 * Transfor data input.
+	 *
+	 * @param data the data
+	 * @return the object[][]
+	 */
+	private Object[][] transforDataInput(ArrayList<ArrayList<Object>> data) {
+		Object[][] objectMatrix = new Object[data.size()][];
+		for(int i = 0 ; i < data.size() ; i++) {
+			System.out.println("contenido del arrayList data : " +  data.get(i));
+			objectMatrix[i] = data.get(i).toArray();
+		}
+		return objectMatrix;
+	}
+
 	/**
 	 * Creates the table report.
 	 *
 	 * @param data the data
 	 * @param columNames the colum names
+	 * @param numColums the num colums
+	 * @param dataEjeY the data eje Y
+	 * @param dataEJeX the data E je X
+	 * @param colorSeries the color series
+	 * @throws ReportProcessingException the report processing exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public void createTableReport(Object[][] data, String[] columNames) {
-		 initReport();
-		 
-		// makeTableFactory();
-		 
+	public void makeTableReport(Object[][] data, String[] columNames , String numColums, String  dataEjeY,String dataEJeX,String[] colorSeries ) throws ReportProcessingException, IOException {
 		  // Create a TableDataFactory.
 	      DATAFACTORY.addTable("default", createTable(data, columNames));
 	      // Add the factory to the report.
 	      setDataFctoryToReport();
-	      // Create a formula expression.
-	      initFormulaExpression();
 	      //init and set headerReport
 	      initHeader();
 	      getReport().setReportHeader(getHeader());
-	      
-	      
-	      
-	      
-	      
-	      
-	      
+	      // se collector of data
+	      //  setCollector(makeCategorySetDataCollector("CategorySetCollectorFunction","Cost","","Cost","Product",false));
+	      // new String[] {"Line", "Product", "Cost", "Quantity"}
+	      // makeCategorySetDataCollector(String name, String numColums, String seriesName, String valueEJeY,String ValueEjeX,Boolean autoGenerateMissingSeriesNames )
+	      setCollector(makeCategorySetDataCollector("",numColums,"",dataEjeY,dataEJeX,false));
+	      setChartExpression(makeBarChartExpression(colorSeries, false, "white"));
+	      getHeader().addElement(makeElement(new LegacyChartType(), "MySuperCoolChartFromApi", getChartExpression(), getCollector(), 200f, 500f));
+	     // System.out.println("Devuelve true si ha logrado crearlo : " + PdfReportUtil.createPDF(report, "/home/alberto/Escritorio/suerte.pdf"));
 
 	}
 	
@@ -121,7 +234,10 @@ public class PentahoLogic  extends ReportObject{
 	 * @param columNames the colum names
 	 * @return the table model
 	 */
-	private TableModel createTable(Object[][] data, String[] columNames) {
+	private TableModel createTable(Object[][] data, String[] columNames ) {
+		
+		System.out.println("inserta los datos bien en la tabla?   "  + data);
+		System.out.println("el nombre de las columnas + " + columNames);
 		return new DefaultTableModel(data, columNames);
 	}
 
@@ -166,7 +282,9 @@ public class PentahoLogic  extends ReportObject{
 
 	      // Defining a data collector for the chart.
 	     //  setCollector(makeCategorySetDataCollector("CategorySetCollectorFunction","Cost","","Cost","Product",false));
-	       setCollector(makeCategorySetDataCollector("","Cost","","Cost","Product",false));
+	      // new String[] {"Line", "Product", "Cost", "Quantity"}
+	      setCollector(makeCategorySetDataCollector("","Product","","Cost","Product",false));
+	      //setCollector(new CategorySetDataCollector());
 	      // Chart layout.
 	     /* BarChartExpression chartExpression = new BarChartExpression();
 	      chartExpression.setShowLegend(true);
@@ -175,8 +293,11 @@ public class PentahoLogic  extends ReportObject{
 	       
 	      );*/
 	      String[] colorSeries  = {"#abcd37","#0392ce","#f9bc02","#66b033","#cc0099"} ;
+	      String[] colorSeries2 = {""};
 	      setChartExpression(makeBarChartExpression(colorSeries, false, "white"));
 
+	      
+	      
 	     /* // Declaring an element for the chart.
 	      Element chartElement = new Element();
 	      chartElement.setElementType(new LegacyChartType());
@@ -245,7 +366,7 @@ public class PentahoLogic  extends ReportObject{
 	    	  
 	      
 		
-		System.out.println("Devuelve true si ha logrado crearlo : " + PdfReportUtil.createPDF(report, "/home/alberto/Escritorio/suerte.pdf"));
+		System.out.println("Devuelve true si ha logrado crearlo : " + PdfReportUtil.createPDF(report, "/home/alberto/Escritorio/suerte2.pdf"));
 		
 	}
 	
@@ -263,7 +384,7 @@ public class PentahoLogic  extends ReportObject{
 	public Element makeNumberFieldElement(String name, Float setX, Float setY, Float MinimunWidht, Float MinimunHeight, Boolean setBold) {
 		  NumberFieldElementFactory numberFactory = new NumberFieldElementFactory();
 		  
-		  System.out.println( "dentro de la funcion " + "name " + name + " setX " + setX + " setY " + setY + "  minimunWIdth " + MinimunWidht + " MinimunHieght " + MinimunHeight +  "   setBOlt " + setBold  );
+		//  System.out.println( "dentro de la funcion " + "name " + name + " setX " + setX + " setY " + setY + "  minimunWIdth " + MinimunWidht + " MinimunHieght " + MinimunHeight +  "   setBOlt " + setBold  );
 	      numberFactory.setFieldname(name);
 	      numberFactory.setX(setX);
 	      numberFactory.setY(setY);
@@ -367,7 +488,7 @@ public class PentahoLogic  extends ReportObject{
 		BarChartExpression auxChartExpression = new BarChartExpression();
 		auxChartExpression.setShowLegend(showLegend);
 		auxChartExpression.setBackgroundColor(backGroundColor);
-		auxChartExpression.setSeriesColor(null);
+		auxChartExpression.setSeriesColor(colorSeries);
 		return auxChartExpression;
 	}
 	
@@ -375,20 +496,22 @@ public class PentahoLogic  extends ReportObject{
 	 * Make category set data collector.
 	 *
 	 * @param name the name
-	 * @param columName the colum name
+	 * @param numColums the num colums
 	 * @param seriesName the series name
-	 * @param valueColumName the value colum name
-	 * @param CateegoryColum the cateegory colum
+	 * @param valueEJeY the value E je Y
+	 * @param ValueEjeX the value eje X
 	 * @param autoGenerateMissingSeriesNames the auto generate missing series names
 	 * @return the category set data collector
+	 * 
+	 * "CategorySetCollectorFunction","Cost","","Cost","Product",false)
 	 */
-	public CategorySetDataCollector makeCategorySetDataCollector(String name, String columName, String seriesName, String valueColumName,String CateegoryColum,Boolean autoGenerateMissingSeriesNames ) {
+	public CategorySetDataCollector makeCategorySetDataCollector(String name, String numColums, String seriesName, String valueEJeY,String ValueEjeX,Boolean autoGenerateMissingSeriesNames ) {
 		 CategorySetDataCollector auxCollector = new CategorySetDataCollector();
 		  auxCollector.setName(name);
-		  auxCollector.setSeriesColumn(0, columName);
+		  auxCollector.setSeriesColumn(0, numColums);
 		  auxCollector.setSeriesName(0, seriesName);
-		  auxCollector.setValueColumn(0, valueColumName);
-		  auxCollector.setCategoryColumn(CateegoryColum);
+		  auxCollector.setValueColumn(0, valueEJeY);
+		  auxCollector.setCategoryColumn(ValueEjeX);
 		  auxCollector.setAutoGenerateMissingSeriesNames(autoGenerateMissingSeriesNames);
 	      
 	      return auxCollector;
@@ -701,13 +824,164 @@ public class PentahoLogic  extends ReportObject{
 
 	/**
 	 * Builds the report.
+	 *
+	 * @param filePath the file path
+	 * @param fileName the file name
 	 */
+
+
 	@Override
-	public void buildReport() {
-		
+	public Boolean buildReport(String filePath, String fileName) {
+		if (getReportType().toUpperCase().contentEquals(TABLE)) {
+			try {
+				return createReportWordCounts(filePath, fileName, getImportDelimiter(), getColumsNames(), getSelectDataColum(), getDataEJeY(), getDataEjex(), getSeriesColorReport());
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ReportProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
 		
 	}
 
 
+	/**
+	 * Gets the colums names.
+	 *
+	 * @return the colums names
+	 */
+	public String[] getColumsNames() {
+		return columsNames;
+	}
+
+
+	/**
+	 * Sets the colums names.
+	 *
+	 * @param columsNames the new colums names
+	 */
+	public void setColumsNames(String[] columsNames) {
+		this.columsNames = columsNames;
+	}
+
+
+	/**
+	 * Gets the import delimiter.
+	 *
+	 * @return the import delimiter
+	 */
+	public String getImportDelimiter() {
+		return importDelimiter;
+	}
+
+
+	/**
+	 * Sets the import delimiter.
+	 *
+	 * @param importDelimiter the new import delimiter
+	 */
+	public void setImportDelimiter(String importDelimiter) {
+		this.importDelimiter = importDelimiter;
+	}
+
+
+	/**
+	 * Gets the series color report.
+	 *
+	 * @return the series color report
+	 */
+	public String[] getSeriesColorReport() {
+		return seriesColorReport;
+	}
+
+
+	/**
+	 * Sets the series color report.
+	 *
+	 * @param seriesColorReport the new series color report
+	 */
+	public void setSeriesColorReport(String[] seriesColorReport) {
+		this.seriesColorReport = seriesColorReport;
+	}
+
+
+	/**
+	 * Gets the select data colum.
+	 *
+	 * @return the select data colum
+	 */
+	public String getSelectDataColum() {
+		return selectDataColum;
+	}
+
+
+	/**
+	 * Sets the select data colum.
+	 *
+	 * @param selectDataColum the new select data colum
+	 */
+	public void setSelectDataColum(String selectDataColum) {
+		this.selectDataColum = selectDataColum;
+	}
+
+
+	/**
+	 * Gets the data ejex.
+	 *
+	 * @return the data ejex
+	 */
+	public String getDataEjex() {
+		return dataEjex;
+	}
+
+
+	/**
+	 * Sets the data ejex.
+	 *
+	 * @param dataEjex the new data ejex
+	 */
+	public void setDataEjex(String dataEjex) {
+		this.dataEjex = dataEjex;
+	}
+
+
+	/**
+	 * Gets the data E je Y.
+	 *
+	 * @return the data E je Y
+	 */
+	public String getDataEJeY() {
+		return dataEJeY;
+	}
+
+
+	/**
+	 * Sets the data E je Y.
+	 *
+	 * @param dataEJeY the new data E je Y
+	 */
+	public void setDataEJeY(String dataEJeY) {
+		this.dataEJeY = dataEJeY;
+	}
+
+	public String getReportType() {
+		return reportType;
+	}
+
+
+	/**
+	 * Sets the report type.
+	 *
+	 * @param reportType the new report type
+	 */
+	public void setReportType(String reportType) {
+		this.reportType = reportType;
+	}
 	
 }
