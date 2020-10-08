@@ -1,0 +1,6 @@
+hdfs://localhost:9000
+/home/hadoop/hadoop-2.8.5/bin/yarn
+/albertoHome2/
+/albertoHome/outputFileTest
+/home/hadoop/hadoop-2.8.5/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar
+wordcount

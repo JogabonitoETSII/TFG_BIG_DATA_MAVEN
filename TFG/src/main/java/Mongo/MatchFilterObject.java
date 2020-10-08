@@ -150,7 +150,7 @@ public class MatchFilterObject {
 	 * @param fieldValue the field value
 	 * @param filter the filter
 	 */
-	private void insertFieldValuePairs(ArrayList<ArrayList<String>> fieldName, ArrayList<ArrayList<Object>> fieldValue, ArrayList<String> filter) {
+	public void insertFieldValuePairs(ArrayList<ArrayList<String>> fieldName, ArrayList<ArrayList<Object>> fieldValue, ArrayList<String> filter) {
 		FieldValueFilter auxInsertPairs;
 		for(int i =  filter.size() -1 ;  i >= 0 ; i--) { //se recorre el bucle de forma inversa para leer en orden correcto los operadores de mongo.
 			auxInsertPairs = new FieldValueFilter(fieldName.get(i),fieldValue.get(i),filter.get(i)); 

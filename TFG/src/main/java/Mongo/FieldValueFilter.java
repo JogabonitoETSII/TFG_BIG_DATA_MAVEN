@@ -28,7 +28,6 @@ public class FieldValueFilter {
 	 * @param filter the filter
 	 */
 	public FieldValueFilter (ArrayList<String> fieldName , ArrayList<Object> fieldValue , String filter) {
-		
 
 		setFieldName(fieldName);
 		setFieldValue(fieldValue);

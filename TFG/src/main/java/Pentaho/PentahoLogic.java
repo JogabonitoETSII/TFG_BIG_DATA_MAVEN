@@ -38,9 +38,22 @@ import org.pentaho.reporting.engine.classic.extensions.legacy.charts.*;
  * The Class PentahoLogic.
  */
 public class PentahoLogic  extends ReportObject{
-	public String reportType ;
+	private final String SERIESCOLOR = "<seriescolor>";
+	private final Integer EJEYPOSITION = 1;
+	private final Integer EJEXPOSITION = 0;
+	private final String INPUTDATA = "<inputdata>";
+	private final String ENDINPUTDATA = "</inputdata>";
+	private final String TABLEMARK = "<table>";
+	private final String ENDTABLE = "</table>";
+	
+	/** The outputextencion. */
 	private final String OUTPUTEXTENCION = ".pdf";
+	
+	/** The table. */
 	private final String TABLE = "TABLE";
+		
+	/** The report type. */
+	public String reportType ;
 	
 	/** The colums names. */
 	private String [] columsNames;
@@ -59,6 +72,8 @@ public class PentahoLogic  extends ReportObject{
 	
 	/** The data E je Y. */
 	private String dataEJeY;
+	
+	private String setReportType;
  	 /** The datafactory. */
  	 final private TableDataFactory DATAFACTORY = new TableDataFactory();
 	
@@ -135,6 +150,7 @@ public class PentahoLogic  extends ReportObject{
 	public Boolean createReportWordCounts(String filePath , String fileName,String delimiter ,String[] columNames , String selectDataColum, String  DataEjeY,String dataEjeX,String[] colorSeries) throws FileNotFoundException, ReportProcessingException, IOException {
 		initReport();
 		//importDataToTableReportDelimeterFormat( filePath,fileName, delimiter);
+		System.out.println("");
 		makeTableReport(importDataToTableReportDelimeterFormat( filePath,fileName, delimiter),columNames,selectDataColum,DataEjeY,dataEjeX,colorSeries);
 		 return PdfReportUtil.createPDF(getReport(),filePath+getOutputFileReportName()+OUTPUTEXTENCION);
 	}
@@ -150,7 +166,7 @@ public class PentahoLogic  extends ReportObject{
 	 */
 	public Object[][] importDataToTableReportDelimeterFormat(String filePath , String fileName , String delimiter) throws FileNotFoundException {
 		File input = new File(filePath+fileName);
-		System.out.println("ruta para el fichero a analizar "  + filePath+fileName);
+		//System.out.println("ruta para el fichero a analizar "  + filePath+fileName);
 		Scanner reader = new Scanner(input);
 		String[] inputLineText;
 		ArrayList<ArrayList<Object>> data = new ArrayList<ArrayList<Object>>();
@@ -220,9 +236,41 @@ public class PentahoLogic  extends ReportObject{
 	      //  setCollector(makeCategorySetDataCollector("CategorySetCollectorFunction","Cost","","Cost","Product",false));
 	      // new String[] {"Line", "Product", "Cost", "Quantity"}
 	      // makeCategorySetDataCollector(String name, String numColums, String seriesName, String valueEJeY,String ValueEjeX,Boolean autoGenerateMissingSeriesNames )
+	      System.out.println("columns name " + numColums + " " );
+	      System.out.println("columns name " + columNames[0]  + " " + columNames[1]);
+	      System.out.println("datos eje x " +  dataEJeX  +  " datos eje Y " + dataEjeY );
 	      setCollector(makeCategorySetDataCollector("",numColums,"",dataEjeY,dataEJeX,false));
 	      setChartExpression(makeBarChartExpression(colorSeries, false, "white"));
 	      getHeader().addElement(makeElement(new LegacyChartType(), "MySuperCoolChartFromApi", getChartExpression(), getCollector(), 200f, 500f));
+	      getHeader().addElement(  makeLabelElement(dataEJeX, 1f, 250f, 100f, 20f, true));
+
+	      // Configuring the label's text.
+	      getHeader().addElement( makeLabelElement(dataEjeY, 101f, 250f, 100f, 20f, true));
+
+	      // Getting the item band to host the elements.
+	      ItemBand itemBand = getReport().getItemBand();
+
+	      // Adding a text field for the product name, added to the item band.
+	      /*TextFieldElementFactory textFactory = new TextFieldElementFactory(); 
+	      textFactory.setFieldname("Product");
+	      textFactory.setX(1f);
+	      textFactory.setY(1f); 
+	      textFactory.setMinimumWidth(100f);
+	      textFactory.setMinimumHeight(20f);
+	      Element nameField = textFactory.createElement(); */
+	      itemBand.addElement(makeTextFieldElement(dataEJeX, 1f, 1f, 100f, 20f, false));
+	      // Adding a number filed with the total cost of the products.
+	     /* NumberFieldElementFactory numberFactory = new NumberFieldElementFactory();
+	      numberFactory.setFieldname("totalCost");
+	      numberFactory.setX(101f);
+	      numberFactory.setY(1f);
+	      numberFactory.setMinimumWidth(100f);
+	      numberFactory.setMinimumHeight(20f);
+	      Element totalCost = numberFactory.createElement();
+	      
+	     itemBand.addElement(totalCost);*/
+	      
+	      itemBand.addElement(makeNumberFieldElement(dataEjeY, 101f, 1f, 100f, 20f, false));
 	     // System.out.println("Devuelve true si ha logrado crearlo : " + PdfReportUtil.createPDF(report, "/home/alberto/Escritorio/suerte.pdf"));
 
 	}
@@ -827,14 +875,18 @@ public class PentahoLogic  extends ReportObject{
 	 *
 	 * @param filePath the file path
 	 * @param fileName the file name
+	 * @return the boolean
 	 */
 
 
 	@Override
 	public Boolean buildReport(String filePath, String fileName) {
+		
+		System.out.println("contenido del report type " + getReportType() + "  + constante table   " + TABLE  );
 		if (getReportType().toUpperCase().contentEquals(TABLE)) {
 			try {
-				return createReportWordCounts(filePath, fileName, getImportDelimiter(), getColumsNames(), getSelectDataColum(), getDataEJeY(), getDataEjex(), getSeriesColorReport());
+				
+				return createReportWordCounts(filePath, fileName, getImportDelimiter(), getColumsNames(),getDataEJeY(), getDataEJeY(), getDataEjex(), getSeriesColorReport());
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -970,6 +1022,11 @@ public class PentahoLogic  extends ReportObject{
 		this.dataEJeY = dataEJeY;
 	}
 
+	/**
+	 * Gets the report type.
+	 *
+	 * @return the report type
+	 */
 	public String getReportType() {
 		return reportType;
 	}
@@ -982,6 +1039,101 @@ public class PentahoLogic  extends ReportObject{
 	 */
 	public void setReportType(String reportType) {
 		this.reportType = reportType;
+	}
+
+
+	/**
+	 * Parses the inputs file.
+	 *
+	 * @param path the path
+	 * @return true, if successful
+	 */
+	@Override
+	public boolean parseInputsFile(String path) {
+		File auxInput = new File(path);
+		String[] auxInputTable= null;
+		String auxTest;
+		try {
+			Scanner input = new Scanner(new File(path));
+			if(auxInput.exists()) {
+				setOutputFileReportName(input.nextLine());
+				setImportDelimiter(input.nextLine());
+				setReportType(input.nextLine());
+				if(input.hasNext(TABLEMARK)) {
+					auxTest = input.nextLine();
+					while(!input.hasNext(ENDTABLE)){
+						auxTest = input.nextLine();
+						auxInputTable = auxTest.split(",");
+						setColumsNames(auxInputTable);
+						setDataEjex(auxInputTable[EJEXPOSITION]);
+						setDataEJeY(auxInputTable[EJEYPOSITION]);
+					}
+					input.nextLine();
+				}
+				if(input.hasNext(INPUTDATA)) {
+					while(input.hasNext(ENDINPUTDATA)) {
+						setFolderInputOuputReport(input.nextLine() );
+						setOutputFileReportName(input.nextLine());
+					}
+					input.nextLine();
+				}
+				if(input.hasNext(SERIESCOLOR)) {
+					setSeriesColorReport(input.nextLine().split(","));
+				}
+				/*pentaho.setOutputFileReportName("/ouputTest1");
+				pentaho.setImportDelimiter("\t");
+				pentaho.setColumsNames(columNames);
+				pentaho.setSelectDataColum("Palabras");
+				pentaho.setDataEJeY("Cantidad");
+				pentaho.setDataEjex("Palabras");
+				pentaho.setSeriesColorReport( new String[] {""});
+				pentaho.setReportType("TABLE");*/
+				
+				
+			}
+			input.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
+
+
+
+	/**
+	 * Gets the outputextencion.
+	 *
+	 * @return the outputextencion
+	 */
+	public String getOUTPUTEXTENCION() {
+		return OUTPUTEXTENCION;
+	}
+
+
+	/**
+	 * Gets the table.
+	 *
+	 * @return the table
+	 */
+	public String getTABLE() {
+		return TABLE;
+	}
+
+
+	public String getSetReportType() {
+		return setReportType;
+	}
+
+
+	/**
+	 * Sets the sets the report type.
+	 *
+	 * @param setReportType the new sets the report type
+	 */
+	public void setSetReportType(String setReportType) {
+		this.setReportType = setReportType;
 	}
 	
 }

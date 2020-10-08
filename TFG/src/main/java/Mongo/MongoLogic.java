@@ -5,12 +5,16 @@ package Mongo;
 
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
@@ -62,11 +66,20 @@ import com.mongodb.client.MongoDatabase;
  */
 public class MongoLogic  extends DatabaseObject{
 	
+	
+	/** The max export value. */
+	private Integer maxExportValue ;
 	/** The Is connected. */
 	private boolean connected ;
 	
 	/** The uri string. */
 	
+	private String ipServer;
+	
+	/** The collection to use. */
+	private String collectionToUse;
+	
+	/** The uri string. */
 	private ConnectionString uriString;
 	
 	/** The settings. */
@@ -76,7 +89,9 @@ public class MongoLogic  extends DatabaseObject{
 	/** The database connect. */
 	private String databaseConnect;
 	
-
+	/** The all documents. */
+	private Boolean allDocuments;
+	
 	/** The database connected. */
 	private MongoClient mongoClient;
 	
@@ -86,9 +101,7 @@ public class MongoLogic  extends DatabaseObject{
 	/** The connection string. */
 	private   String connectionString ="";
 	//private   String connectionString = "mongodb://admin:admin@127.0.0.1:27017/admin"
-	
-	/** The query creator. */
-	private PojosClass queryCreator;
+
 	
 	/** The agrregates. */
 	private AggregationQueryBuilders agrregates;
@@ -105,9 +118,10 @@ public class MongoLogic  extends DatabaseObject{
 	 */
 	public MongoLogic() throws MongoException {
 		setExcludeIdFind(false);
-		setQueryCreator(new PojosClass());
 		setAgrregates(new AggregationQueryBuilders());
-		createConecctionOnDatabase( getConnectionString());
+		if(!getConnectionString().isEmpty()) {
+			createConecctionOnDatabase( getConnectionString());
+		}
 	}
 	
 	/**
@@ -130,7 +144,29 @@ public class MongoLogic  extends DatabaseObject{
 	 * @param connectionString1 the connection string 1
 	 * @throws MongoException the mongo exception
 	 */
-	private void createConecctionOnDatabase(String connectionString1) throws MongoException {
+	public void createConecctionOnDatabase(String connectionString1) throws MongoException {
+		try {
+			setConnected(true);
+			createUriString(connectionString1);
+			setSettings(clientSettings());
+			setMongoClient(MongoClients.create(getSettings()));
+		}catch ( MongoException e) {
+			System.out.println( " Error connection MongoDatabase " +  e);
+			setConnected(false);
+		}
+		finally {
+			if (getMongoClient() == null) {
+				mongoCLoseDBConnection();
+			}
+		}
+	}
+	
+	/**
+	 * Creates the conecction on database.
+	 *
+	 * @throws MongoException the mongo exception
+	 */
+	public void createConecctionOnDatabase() throws MongoException {
 		try {
 			setConnected(true);
 			createUriString(getConnectionString());
@@ -318,6 +354,12 @@ public class MongoLogic  extends DatabaseObject{
 		
 	}
 	
+	/**
+	 * Aggregate projection.
+	 *
+	 * @param field the field
+	 * @param exclude the exclude
+	 */
 	public void AggregateProjection(String field , Boolean exclude) {
 		getAgrregates().makeProjectStage(field, exclude);
 	}
@@ -542,24 +584,7 @@ public class MongoLogic  extends DatabaseObject{
 		this.auxDocumentToUse = auxDocumentToUse;
 	}
 
-	/**
-	 * Gets the query creator.
-	 *
-	 * @return the query creator
-	 */
-	public PojosClass getQueryCreator() {
-		return queryCreator;
-	}
 
-	/**
-	 * Sets the query creator.
-	 *
-	 * @param queryCreator the new query creator
-	 */
-	public void setQueryCreator(PojosClass queryCreator) {
-		this.queryCreator = queryCreator;
-	}
-	
 	
 	/**
 	 * Gets the settings.
@@ -657,22 +682,32 @@ public class MongoLogic  extends DatabaseObject{
 		// TODO Auto-generated method stub
 		setFilePathToExport(new String[] {folderPath,fileName}); // SET FOLDER AND FILE NAME TO LINKED  A HADOOP
 		
-		// System.out.println("cotenido de la query " + aggregateMatch.first() );
+		//System.out.println("cotenido de la query " + aggregateMatch.first() );
+		//System.out.println("folder y filne name  " + folderPath+fileName);
 		
 		@SuppressWarnings("resource")
 		FileWriter auxOutputStream = new FileWriter(folderPath+fileName);
-		int i = 0;
+		int exportedDocuments = 0;
 		for(Document outputDocs : aggregateMatch) {
-			i++;
+			exportedDocuments++;
 			auxOutputStream.write(  outputDocs.toJson() + "\n");
-			
-			if(i > 100) {
+			if((exportedDocuments > getMaxExportValue()) && (!getAllDocuments())) {
 				auxOutputStream.close();
 				break;
 			}
 			
 		}
 	}
+	
+	/**
+	 * Export to data to file.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public void exportToDataToFile() throws IOException {
+		exportToDataToFile(getFilePath(), getFileName(), findDocuments(getDatabaseConnect(), getCollectionToUse()));
+	}
+	
 
 	/**
 	 * Exclude id from querys result.
@@ -702,4 +737,216 @@ public class MongoLogic  extends DatabaseObject{
 	public void setExcludeIdFind(Boolean excludeIdFind) {
 		this.excludeIdFind = excludeIdFind;
 	}
+
+	/**
+	 * Parses the inputs file.
+	 *
+	 * @param path the path
+	 * @return true, if successful
+	 */
+	@Override
+	public boolean parseInputsFile(String path  )  {
+			// auxiliares de el MATH
+			MatchFilterObject auxInsertQuerys = new MatchFilterObject();
+			ArrayList<ArrayList<Object>> auxInsertValues = new ArrayList<ArrayList<Object>>();
+			ArrayList<ArrayList<String>> auxInsertFields = new ArrayList<ArrayList<String>>();
+			ArrayList<String> auxInsertFilters = new ArrayList<String>();
+			ArrayList<Object> auxValues = new ArrayList<Object>();
+			ArrayList<String> auxFields =  new ArrayList<String>();
+			
+			// auxliares de Projection
+			
+			String auxProjectionField;
+			Boolean auxExclude;
+			System.out.println("fichero a ejecuta . "  );
+		try {
+			File auxInput = new File(path);
+			Scanner input = new Scanner(new File(path));
+			if(auxInput.exists()) {
+				setIpServer(input.nextLine()); /// insertamos la ip del servidor 
+				//System.out.println("Ip leida " +  getIpServer());
+				setDatabaseConnect(input.nextLine());// insertamos la BBDD a conectar
+				//System.out.println("database a conectar  " +  getDatabaseConnect());
+				setCollectionToUse(input.nextLine()); // insertmaos la coleccion a ejecuta.
+				//System.out.println("coleccion a usar  " +  getCollectionToUse());
+				setFilePath(input.nextLine()); // insertamos el directorio donde queremos dejar el fichero
+				//System.out.println("path del fichero a usar exportar" +  getFilePath());
+			
+				setFileName(input.nextLine()); // insertamos el nombre del fichero de salida.
+				
+				if(input.hasNext("[-+]?\\d*\\.?\\d+")) {
+					setAllDocuments(false);
+					setMaxExportValue(Integer.parseInt(input.nextLine()));
+				}
+				else {
+					setMaxExportValue(1000);
+					setAllDocuments(true);
+				}
+				//System.out.println("nombre del fichero a usar exportar" +  getFileName());
+				String [] inputLine;
+				String testinput;
+				if(input.hasNext(getAgrregates().getMATCH())){ // si encontramos la etiqueta <MATHC> empezamos a parsear
+					input.nextLine();
+						while(!input.hasNext(getAgrregates().getENDMATCH())) { // hasta que encontremos la etiqueta <ENDMATCH>
+
+							testinput = input.nextLine(); // nos saltamos la etiqueta
+							inputLine = testinput.split(",");// tokenizamos por , para obtener los filtros , campos y valores
+							if(inputLine.length > 2) { // verificamos que se han introducide los 3 valores por linea
+								//System.out.println("input line " +  testinput + " length del  input line " + testinput.split(",").length); tester
+								auxInsertFilters.add(inputLine[getAgrregates().FILTERPOSITION]);// insertamos el filtro
+								auxFields.add(inputLine[getAgrregates().FIELDPOSITION ]);//insertamos el campo
+								 if(inputLine[getAgrregates().VALUEPOSITION].matches("[-+]?\\d*\\.?\\d+")) { // comprobamos que se inserta un numero
+									 auxValues.add(Double.parseDouble(inputLine[getAgrregates().VALUEPOSITION]));
+								}
+								else {	
+									auxValues.add(inputLine[getAgrregates().VALUEPOSITION]); // si no se inserta el valor del texto
+								}
+								 auxInsertValues.add(auxValues);
+								 auxInsertFields.add(auxFields);
+								 auxValues = new ArrayList<Object>(); // seteamos los auxliares de entrada para volver a insertar mas sentencias
+								 auxFields =  new ArrayList<String>();// seteamos los auxliares de entrada para volver a insertar mas sentencias	 
+							}
+							else {
+								System.out.println("los valores insertados son menores al numero requerido. !!!" +  inputLine[0]);
+							}
+							
+						}
+						input.nextLine();
+						auxInsertQuerys.insertFieldValuePairs(auxInsertFields , auxInsertValues , auxInsertFilters);
+						getAgrregates().setMachtStage(auxInsertQuerys);
+					}
+					if(input.hasNext(getAgrregates().getPROJECTION())) {
+						input.nextLine();
+						while(!input.hasNext(getAgrregates().getENDPROJECTION())) {
+							testinput = input.nextLine(); // nos saltamos la etiqueta;
+							inputLine = testinput .split(",");
+							
+							if((inputLine.length > 1 ) && (inputLine.length < 3)) { //para la projeccion nos aseguramos de que solo insertan dos valores.
+								 // System.out.println("input line  !!!!!!!!!!!!!!!!!!!!!!!!!!!" +  testinput + " length del  input line " + testinput.split(",").length); tester
+								getAgrregates().makeProjectStage(inputLine[getAgrregates().FILTERPOSITION], Boolean.parseBoolean(inputLine[getAgrregates().FILTERPOSITION]));
+							}
+							else {
+								System.out.println("ha insertado el numero equivocado de valores. " +  inputLine[0] + " tamaño del vector " + inputLine.length );
+							}
+						}
+						excludeIdFromQuerysResult();
+					}	
+				}
+			else {
+				System.out.println(" el ficheor no existe " + path  );
+				return false;
+			}
+			input.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Make connection string.
+	 *
+	 * @param user the user
+	 * @param password the password
+	 * @param ip the ip
+	 * @param database the database
+	 */
+	public void makeConnectionString (String user, String password, String ip , String database) {
+		if((!user.isEmpty()) && (!password.isEmpty())) {
+			setConnectionString("mongodb://" + user + ":" + password + "@" + ip +"/" + database );
+		}
+		else {
+			System.out.println("Error el valor del usuario es Nulo" + user );
+			if(password.isEmpty()) {
+				System.out.println("Error el valor del usuario es Nulo" + user );
+			}
+		}
+	}
+	
+	/**
+	 * Gets the max export value.
+	 *
+	 * @return the max export value
+	 */
+	public Integer getMaxExportValue() {
+		return maxExportValue;
+	}
+
+	/**
+	 * Sets the max export value.
+	 *
+	 * @param maxExportValue the new max export value
+	 */
+	public void setMaxExportValue(Integer maxExportValue) {
+		this.maxExportValue = maxExportValue;
+	}
+
+	/**
+	 * Gets the ip server.
+	 *
+	 * @return the ip server
+	 */
+	public String getIpServer() {
+		return ipServer;
+	}
+
+	/**
+	 * Sets the ip server.
+	 *
+	 * @param ipServer the new ip server
+	 */
+	public void setIpServer(String ipServer) {
+		this.ipServer = ipServer;
+	}
+
+	/**
+	 * Gets the collection to use.
+	 *
+	 * @return the collection to use
+	 */
+	public String getCollectionToUse() {
+		return collectionToUse;
+	}
+
+	/**
+	 * Sets the collection to use.
+	 *
+	 * @param collectionToUse the new collection to use
+	 */
+	public void setCollectionToUse(String collectionToUse) {
+		this.collectionToUse = collectionToUse;
+	}
+
+	/**
+	 * Gets the all documents.
+	 *
+	 * @return the all documents
+	 */
+	public Boolean getAllDocuments() {
+		return allDocuments;
+	}
+
+	/**
+	 * Sets the all documents.
+	 *
+	 * @param allDocuments the new all documents
+	 */
+	public void setAllDocuments(Boolean allDocuments) {
+		this.allDocuments = allDocuments;
+	}
+
+	@Override
+	public boolean exportToDataToFile(String folderPath, String fileName) {
+		try {
+			exportToDataToFile( folderPath,fileName,findDocuments(getDatabaseConnect(), getCollectionToUse()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	
 }

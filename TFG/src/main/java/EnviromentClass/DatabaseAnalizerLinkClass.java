@@ -1,9 +1,6 @@
-package com.TFG_BIG_DATA.maven.TFG_MAVEN_2;
+package EnviromentClass;
 
 import java.io.File;
-
-import EnviromentClass.AnalizerObject;
-import EnviromentClass.DatabaseObject;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -37,18 +34,26 @@ public class DatabaseAnalizerLinkClass {
 		setDataBase(dataBase);
 		setAnalizer(analizer);
 	}
+	public void executeWOrkFlowDatabase() {
+		getDataBase().exportToDataToFile(getDataBase().getFilePath(), getDataBase().getFileName());
+		
+	}
 
 	/**
 	 * Execute file to analice.
 	 */
-	public void executeFileToAnalice() {
+	public void executeWorkFlowDatabaseAnalizer() {
+		executeWOrkFlowDatabase();
 		String[]  auxFilePathToAnalize;
 		auxFilePathToAnalize  = getDataBase().filePathToAnalize();
 		setPathTOExecute(auxFilePathToAnalize[FILEPATHPOSITION], auxFilePathToAnalize[FILENAMEPOSITION]);
+		executeAnalizerWorkFlow();
+;		
+	}
+	public void executeAnalizerWorkFlow() {
 		getAnalizer().uploadData(getAnalizer().getRemotePath());
 		getAnalizer().execute();
 		getAnalizer().downloadResult();
-		
 	}
 	
 	public void setPathTOExecute(String pathFile, String fileName) {

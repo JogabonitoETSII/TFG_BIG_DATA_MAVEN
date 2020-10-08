@@ -1,8 +1,11 @@
 package Hadoop;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Scanner;
 
 import org.apache.hadoop.conf.Configuration;
 
@@ -70,6 +73,23 @@ public class HadoopLogic extends AnalizerObject  {
 		}
 	}
 	
+	public void deleteLocal() throws InterruptedException {
+		try {
+			Process auxProces = Runtime.getRuntime().exec("ls "+getFilePathToAnalize()+outputLocalFolder());
+			System.out.println(" salida del ls "+getFilePathToAnalize()+outputLocalFolder());
+			BufferedReader reader =  new BufferedReader(new InputStreamReader(auxProces.getInputStream()));
+			String folder = reader.readLine();
+			System.out.println(folder);
+			if(reader.readLine() != null) {
+				Runtime.getRuntime().exec("rm -r "+getFilePathToAnalize()+outputLocalFolder());
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Execute to yarn.
 	 *
@@ -81,7 +101,7 @@ public class HadoopLogic extends AnalizerObject  {
 	 * @throws InterruptedException the interrupted exception
 	 */
 	public void executeToYarn( String jarFilePathToExecute, String jarOption, String inputFolder,String outputFolder) throws IOException, InterruptedException {	
-		
+		deleteLocal();
 		getYarn().executeAlgorit(jarFilePathToExecute, jarOption, inputFolder, outputFolder);
 	}
 	
@@ -94,6 +114,9 @@ public class HadoopLogic extends AnalizerObject  {
 	public void uploadData(String filePathToCluster) {
 		setFolderInputPath(filePathToCluster);
 		try {
+			if(getHdfscomands().existFile( getRemotePath(), getFileName())) {
+				getHdfscomands().removeFolder(getRemotePath(), true);
+			}
 			getHdfscomands().copyFromLocal(getFilePathToAnalize(), getFileName(), getRemotePath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -244,14 +267,13 @@ public class HadoopLogic extends AnalizerObject  {
 		try {
 			Process auxProces;
 			 auxProces = Runtime.getRuntime().exec("ls " + getFilePathToAnalize() + outputLocalFolder());
-
 			BufferedReader reader =  new BufferedReader(new InputStreamReader(auxProces.getInputStream()));
 			String line = "";           
 			Integer i = 0;
 		        while ((line = reader.readLine())!= null) {
 		        	i++;
-		        	System.out.println("contenido del directorio "  + line + " numero de veces en el bucle  " + i  );
-		        	System.out.println("boolean devolviendo de la exprecion !line.contains(PDF) " +!line.toUpperCase().contains(PDF));
+		        	//System.out.println("contenido del directorio "  + line + " numero de veces en el bucle  " + i  );
+		        	//System.out.println("boolean devolviendo de la exprecion !line.contains(PDF) " +!line.toUpperCase().contains(PDF));
 		        	if( (!line.contains(SUCCES)) && !line.toUpperCase().contains(PDF)) {
 		        		return  ROOT+line;
 		        	}
@@ -272,5 +294,59 @@ public class HadoopLogic extends AnalizerObject  {
 		String [] auxFolder;
 		auxFolder =  getOutputPath().split("/");
 		return auxFolder[auxFolder.length - ONE];
+	}
+
+	@Override
+	public boolean parseInputsFile(String path) {
+		
+		
+		
+		
+		try {
+			File auxInput = new File(path);
+			Scanner input = new Scanner(new File(path));
+			if(auxInput.exists()) {
+				setConnectionString(input.nextLine()); // connnection stirng
+				try {
+					setHdfscomands(new HDFSLogic(getConnectionString()));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				getYarn().setYarnHome(input.nextLine()); // ubicacion local del yarn
+				setRemotePath(input.nextLine()); // path remoto para subir la informacion
+				setOutputPath(input.nextLine()); // folder de salida
+				getYarn().setJarFileToExecute(input.nextLine()); // ubicacion del jar file a ejecutar
+				getYarn().setJarOption(input.nextLine()); // opciones del fichero jar a ejecutar
+				if(input.hasNext()) { // opcional si solo se quiere analizar
+					setFilePathToAnalize(input.nextLine()); // path donde esta el fichero a analizar
+					setFileName(input.nextLine()); // nombre del fichero a analizar
+				}
+			/*	connection String HDFS
+			 * 	hadoopYarn.getYarn().setYarnHome("/home/hadoop/hadoop-2.8.5/bin/yarn"); // añadimos el home del yarn en local
+				hadoopYarn.setRemotePath("/albertoHome/"); // añadimos el path remoto donde se va a subir el fichero
+				hadoopYarn.setOutputPath("/albertoHome/outputTEST1"); // añadimos el folder para el fichero de salida
+				hadoopYarn.setYarnJarFileToExecute("/home/hadoop/hadoop-2.8.5/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.5.jar"); // añadimos el fichero jar a ejecuta
+				hadoopYarn.setYarnJarOption("wordcount"); // añadimos la opcion para el fichero jar
+				opcional directorio donde cojer los datos
+				opcional fichero de datos.
+				*/
+				
+				
+				
+				
+				
+			}
+			else {
+				System.out.println(" el ficheor no existe " + path  );
+			}
+			
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return true;
 	}
 }

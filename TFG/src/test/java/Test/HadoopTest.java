@@ -9,7 +9,7 @@ public class HadoopTest {
 	@Test
 	public void test() {
 
-		HadoopLogic hadoop = new HadoopLogic();
+	//	HadoopLogic hadoop = new HadoopLogic();
 
 	}
 	

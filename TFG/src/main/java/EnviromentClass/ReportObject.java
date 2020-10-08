@@ -19,7 +19,6 @@ public abstract class ReportObject {
 	 *
 	 * @param filePath the file path
 	 * @param fileName the file name
-	 * @param reportType the report type
 	 * @return the boolean
 	 */
 	public abstract Boolean buildReport(String filePath , String fileName);
@@ -65,6 +64,13 @@ public abstract class ReportObject {
 	}
 
 
-	
+	/**
+	 * Parses the inputs file.
+	 *
+	 * @param path the path
+	 * @param filename the filename
+	 * @return true, if successful
+	 */
+	public  abstract boolean parseInputsFile(String path) ;
 	
 }

@@ -234,8 +234,8 @@ public class HDFSLogic {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	
-	public Boolean removeFolder(String remoteFolder, String folderNameToRemove, Boolean recursive) throws IllegalArgumentException, IOException {
-		return getHdfsFileSystem().delete(new Path(remoteFolder + folderNameToRemove), recursive);
+	public Boolean removeFolder(String remoteFolder, Boolean recursive) throws IllegalArgumentException, IOException {
+		return getHdfsFileSystem().delete(new Path(remoteFolder), recursive);
 	}
 	
 	/**

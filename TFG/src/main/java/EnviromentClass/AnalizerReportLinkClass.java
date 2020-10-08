@@ -1,7 +1,4 @@
-package com.TFG_BIG_DATA.maven.TFG_MAVEN_2;
-
-import EnviromentClass.AnalizerObject;
-import EnviromentClass.ReportObject;
+package EnviromentClass;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -32,9 +29,16 @@ public class AnalizerReportLinkClass {
 		setAnalizer(analizer);
 		setReport(report);
 	}
-
-	public Boolean makeReport() {
-		System.out.println("path del report de salida " + getAnalizer().getFilePathToAnalize()+getAnalizer().outputLocalFolder() );
+	
+	public Boolean makeReportWorkFlow() {
+		//System.out.println("!!!!!!!!!!!!!!!!!!!!!!path de las alida de hadoop  " + getAnalizer().getFilePathToAnalize()+getAnalizer().outputLocalFolder() + "   nombre del fichero " + getAnalizer().getResultFile()  );
+		return getReport().buildReport(getReport().getOutputFileReportName(), getAnalizer().getResultFile());
+	}
+	
+	public Boolean makeReportAnalizerWorkFlow() {
+		//System.out.println("path del report de salida  makeReportAnalizerWorkFlow()  " + getAnalizer().getFilePathToAnalize()+getAnalizer().outputLocalFolder() );
+		System.out.println("path de las alida de hadoop  " + getAnalizer().getFilePathToAnalize()+getAnalizer().outputLocalFolder() + "   nombre del fichero " + getAnalizer().getResultFile()  );
+		
 		return getReport().buildReport(getAnalizer().getFilePathToAnalize()+getAnalizer().outputLocalFolder(), getAnalizer().getResultFile());
 	}
 	

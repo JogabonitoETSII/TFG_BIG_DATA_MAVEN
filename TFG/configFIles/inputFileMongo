@@ -1,0 +1,17 @@
+127.0.0.1:27017
+test
+products
+/home/alberto/Escritorio/
+outputTestParser
+1
+<match>
+eq,type,"Music"
+gte,regularPrice,14.99
+</match>	
+<projection>
+type,true
+sku,true
+shippingWeight,true
+salePrice,true
+regularPrice,true
+</projection>

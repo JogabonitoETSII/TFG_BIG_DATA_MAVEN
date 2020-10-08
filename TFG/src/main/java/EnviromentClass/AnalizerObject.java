@@ -147,4 +147,7 @@ public abstract class AnalizerObject {
 	 * @return the string
 	 */
 	public abstract String outputLocalFolder();
+	
+	public abstract boolean parseInputsFile(String path ) ;
+
 }

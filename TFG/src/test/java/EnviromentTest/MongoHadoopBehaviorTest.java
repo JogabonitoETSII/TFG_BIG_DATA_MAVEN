@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.TFG_BIG_DATA.maven.TFG_MAVEN_2.DatabaseAnalizerLinkClass;
-
+import EnviromentClass.DatabaseAnalizerLinkClass;
 import Hadoop.HadoopLogic;
 import Mongo.MatchFilterObject;
 import Mongo.MongoLogic;
@@ -65,10 +64,10 @@ public class MongoHadoopBehaviorTest {
 		String connectionString = "mongodb://" + USER + ":" + PASS + "@127.0.0.1:27017/" + DATABASENAME;
 		MongoLogic connectionDatabase = null;
 		connectionDatabase = new MongoLogic(connectionString);
-		/*connectionDatabase.AggregateProjection("sku", false); // kitamos los campos que puedan ralentizar el proceso
+		connectionDatabase.AggregateProjection("sku", false); // kitamos los campos que puedan ralentizar el proceso
 		connectionDatabase.AggregateMatch(match); // setemaos la query
 		connectionDatabase.exportToDataToFile("/home/alberto/Escritorio/","exportTEST1" ,connectionDatabase.findDocuments(DATABASENAME, COLLECTION) ); // exportmaos los datos
-		connectionDatabase.setFilePathToExport(new String[] {"/home/alberto/Escritorio/","exportTEST1"}); 
+		//connectionDatabase.setFilePathToExport(new String[] {"/home/alberto/Escritorio/","exportTEST1"}); 
 		hadoopYarn.getYarn().setYarnHome("/home/hadoop/hadoop-2.8.5/bin/yarn"); // añadimos el home del yarn en local
 		hadoopYarn.setRemotePath("/albertoHome/"); // añadimos el path remoto donde se va a subir el fichero
 		hadoopYarn.setOutputPath("/albertoHome/outputTEST1"); // añadimos el folder para el fichero de salida
@@ -78,7 +77,7 @@ public class MongoHadoopBehaviorTest {
 		mongoHadoopLinked.setAnalizer(hadoopYarn); // seteamos el obejto analizardor
 		mongoHadoopLinked.setPathTOExecute("/home/alberto/Escritorio/outputTEST1/", "exportTEST1"); // 
 		String line = hadoopYarn.getResultFile();
-		//mongoHadoopLinked.executeFileToAnalice();
+		mongoHadoopLinked.executeFileToAnalice();
 		//hadoopYarn.downloadResult();
 		//System.out.println( "devuelve ture si existe  el fichero _SUCCES  " +  mongoHadoopLinked.succesBuildSolution()); // comprobamos que el fichero __SUCCES se encuentra en local
 		

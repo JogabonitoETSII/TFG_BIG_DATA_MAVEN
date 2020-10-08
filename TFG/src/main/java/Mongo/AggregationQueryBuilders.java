@@ -23,6 +23,28 @@ import com.mongodb.client.model.BsonField;
  */
 public class AggregationQueryBuilders  {
 
+	
+	/** The valueposition. */
+	final public Integer VALUEPOSITION = 2;
+	
+	/** The fieldposition. */
+	final public Integer FIELDPOSITION = 1;
+	
+	/** The filterposition. */
+	final public Integer FILTERPOSITION = 0;
+	
+	/** The match. */
+	final public String MATCH = "<match>";
+	
+	/** The endmatch. */
+	final public String ENDMATCH = "</match>";
+	
+	/** The projection. */
+	final public String PROJECTION = "<projection>";
+	
+	/** The endprojection. */
+	final public String ENDPROJECTION = "</projection>";
+	
 	/** The Project staga. */
 	private boolean ProjectStaga;
 	
@@ -71,7 +93,7 @@ public class AggregationQueryBuilders  {
 	 * Make project stage.
 	 *
 	 * @param fields the fields
-	 * @param excludeId the exclude id
+	 * @param exclude the exclude
 	 */
 	public void makeProjectStage(ArrayList<String> fields , boolean exclude) {
 		Bson projection = null;
@@ -88,6 +110,12 @@ public class AggregationQueryBuilders  {
 		}
 	}
 	
+	/**
+	 * Make project stage.
+	 *
+	 * @param field the field
+	 * @param exclude the exclude
+	 */
 	public void makeProjectStage(String field , boolean exclude) {
 		Bson projection = null;
 		
@@ -274,6 +302,46 @@ public class AggregationQueryBuilders  {
 	 */
 	public void setMachtStage(MatchFilterObject machtStage) {
 		this.machtStage = machtStage;
+	}
+
+
+	/**
+	 * Gets the match.
+	 *
+	 * @return the match
+	 */
+	public String getMATCH() {
+		return MATCH;
+	}
+
+
+	/**
+	 * Gets the projection.
+	 *
+	 * @return the projection
+	 */
+	public String getPROJECTION() {
+		return PROJECTION;
+	}
+
+
+	/**
+	 * Gets the endmatch.
+	 *
+	 * @return the endmatch
+	 */
+	public String getENDMATCH() {
+		return ENDMATCH;
+	}
+
+
+	/**
+	 * Gets the endprojection.
+	 *
+	 * @return the endprojection
+	 */
+	public String getENDPROJECTION() {
+		return ENDPROJECTION;
 	}
 	
 }

@@ -195,7 +195,7 @@ public class HDFSLogicTest {
 	 * @throws IllegalArgumentException 
 	 */
 	public void removeFolderTest(HDFSLogic hdfsTest , String remoteFolder ,String folderToDelete) throws IllegalArgumentException, IOException {
-		Assert.assertTrue(hdfsTest.removeFolder(remoteFolder,folderToDelete,false));		
+		Assert.assertTrue(hdfsTest.removeFolder(remoteFolder,false));		
 	}
 	
 	public void removeFolderInActuallyFolderTest(HDFSLogic hdfsTest , String remoteFolder ,String folderToDelete) throws IllegalArgumentException, IOException {

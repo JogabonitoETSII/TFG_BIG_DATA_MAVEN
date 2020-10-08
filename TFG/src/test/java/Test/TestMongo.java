@@ -1,5 +1,6 @@
 package Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,10 +53,14 @@ public class TestMongo {
 	@org.junit.Test
 	public void test() {
 
-		/*String connectionString = "mongodb://" + USER + ":" + PASS + "@127.0.0.1:27017/" + DATABASENAME;
+		String connectionString = "mongodb://" + USER + ":" + PASS + "@127.0.0.1:27017/" + DATABASENAME;
 		MongoLogic connectionDatabase = null;
-		connectionDatabase = new MongoLogic(connectionString);*/
-
+		 //connectionDatabase = new MongoLogic(connectionString);
+		connectionDatabase = new MongoLogic();
+		
+		//connectionDatabase.parseInputsFile("/home/alberto/Escritorio");
+		
+		
 		/*
 		 * MongoLogicConnecitonTest(connectionDatabase);
 		 * MongoGetDatabasesTest(connectionDatabase);
@@ -75,6 +80,12 @@ public class TestMongo {
 		// deleteOneTest(connectionDatabase);
 
 		// deleteManyTest(connectionDatabase);
+		/*try {
+			workflowParseInputFileExporFile(connectionDatabase,"/home/alberto/Escritorio/inputFileMongo");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 	}
 
 	/*
@@ -91,6 +102,25 @@ public class TestMongo {
 	 * }
 	 */
 
+	public void workflowParseInputFileExporFile(MongoLogic connectionDatabase ,String Path) throws IOException {
+		
+		Assert.assertTrue(connectionDatabase.parseInputsFile(Path));
+		connectionDatabase.makeConnectionString("test", "test", connectionDatabase.getIpServer(), connectionDatabase.getDatabaseConnect());
+		connectionDatabase.createConecctionOnDatabase();
+		connectionDatabase.exportToDataToFile();
+	}
+	
+	/**
+	 * Parses the input file test.
+	 *
+	 * @param connectionDatabase the connection database
+	 * @param Path the path
+	 */
+	public void parseInputFileTest(MongoLogic connectionDatabase ,String Path) {
+		Assert.assertTrue(connectionDatabase.parseInputsFile(Path));
+	}
+	
+	
 	/**
 	 * Mongo logic conneciton test.
 	 *
@@ -281,6 +311,8 @@ public class TestMongo {
 
 	/**
 	 * Delete many test.
+	 *
+	 * @param connectionDatabase the connection database
 	 */
 	public void deleteManyTest(MongoLogic connectionDatabase) {
 		Document updatdeDocument = new Document();
